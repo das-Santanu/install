@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button with Progress</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <!-- Your application content here -->
+   <button class="install" onclick="installPWA()">Install</button>
+  <button id="fetchButton" onclick="fetchQuestion()">Fetch Question</button>
+  <button class="clearButton" onclick="clearIndexedDB()">Clear IndexedDB</button>
+  <div class="question" id="questionContainer">
+    <div class="nav">
+      <div class="navLeft"><p>Question</p></div>
+      <div class="navRight"><p>Answer</p></div>
+    </div>
+  </div>
+
+  <!-- Register the service worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(function(registration) {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            handleInstallPrompt( registration)
+          })
+          .catch(function(error) {
+            console.error('ServiceWorker registration failed: ', error);
+          });
+      });
+    }
+
+    function handleInstallPrompt(registration) {
+      // Check if the PWA is already installed
+      if (registration && registration.installing) {
+        registration.installing.addEventListener('statechange', function(event) {
+          if (event.target.state === 'installed') {
+            console.log('PWA is already installed');
+            document.querySelector(".install").style.display = 'none'
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>
